@@ -1,4 +1,3 @@
-```python
 from typing import Any, Dict
 
 from fastapi import FastAPI, HTTPException
@@ -45,5 +44,3 @@ def solve(input_data: InputData) -> Dict[str, Any]:
     profit = sum(input_data.profits[node] for node in result)
     
     return {"path": result, "distance": distance, "profit": profit}
-
-```
