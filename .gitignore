@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+
+# C/C++ build
+build/
+dist/
+*.o
+*.obj
+*.exe
+cmake-build-*/
+
+# backup zips
+orienteering-*-backup.zip
+
+# VSCode
+.vscode/
+
+# pybind and build artifacts
+*.so
+*.pyd
+*.dll
+*.lib
+
+# Visual Studio
+*.vcxproj*
+*.sln
+
+# others
+.DS_Store
