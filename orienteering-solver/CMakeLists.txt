@@ -11,7 +11,7 @@ find_package(pybind11 CONFIG REQUIRED)
 
 pybind11_add_module(_core src/main.cpp
     src/algorithms/greedy/NearestNeighbour.cpp
-    src/algorithms/greedy/CheapestInsertion.cpp
+    src/algorithms/greedy/InsertionHeuristic.cpp
 )
 target_include_directories(_core PRIVATE src)
 
