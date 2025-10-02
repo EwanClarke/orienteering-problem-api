@@ -1,0 +1,8 @@
+//
+// Created by ewano on 01/10/2025.
+//
+
+#ifndef INSERTIONHEURISTIC_H
+#define INSERTIONHEURISTIC_H
+
+#endif //INSERTIONHEURISTIC_H
