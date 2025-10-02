@@ -2,24 +2,6 @@ from typing import Any, Dict, List, Optional
 
 from orienteering_solver import OrienteeringProblemInputData, nearest_neighbour, cheapest_insertion, most_profitable_insertion, greedy_insertion
 from pydantic import BaseModel, Field
-from enum import Enum
-
-class OrienteeringProblemAlgorithm(str, Enum):
-    NEAREST_NEIGHBOUR = "nearest_neighbour"
-    CHEAPEST_INSERTION = "cheapest_insertion"
-    MOST_PROFITABLE_INSERTION = "most_profitable_insertion"
-    GREEDY_INSERTION = "greedy_insertion"
-
-    @property
-    def solve(self):
-        return FUNCTION_DICT[self.value]
-
-FUNCTION_DICT: Dict[str, Any] = {
-    "nearest_neighbour": nearest_neighbour,
-    "cheapest_insertion": cheapest_insertion,
-    "most_profitable_insertion": most_profitable_insertion,
-    "greedy_insertion": greedy_insertion,
-}
 
 class location(BaseModel):
     lat: float
@@ -44,8 +26,8 @@ class InputData(BaseModel):
     start_node: Optional[int] = None
     end_node: Optional[int] = None
 
-    algorithm: OrienteeringProblemAlgorithm = Field(
-        OrienteeringProblemAlgorithm.NEAREST_NEIGHBOUR,
+    algorithm: Optional[str] = Field(
+        "nearest_neighbour",
         description=(
             "The algorithm to use for solving the orienteering problem. If not provided, defaults to 'nearest_neighbour'."
         ),

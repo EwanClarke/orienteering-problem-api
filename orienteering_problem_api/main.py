@@ -5,6 +5,7 @@ from models import InputData, PathResponse
 import matrix_construction
 from input_validation import validate_input
 from errors import ValidationError, InternalConversionError
+from orienteering_solver import solve_orienteering_problem
 
 app = FastAPI()
 
@@ -36,7 +37,7 @@ def solve(input_data: InputData) -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"Internal validation error: {e}")
 
     try:
-        result = input_data.algorithm.solve(solver_input)
+        result = solve_orienteering_problem(solver_input, input_data.algorithm)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred while solving the problem: {e}")
     

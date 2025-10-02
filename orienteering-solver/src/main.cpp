@@ -2,9 +2,11 @@
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 
+#include "OrienteeringProblemInputData.h"
 #include "algorithms/greedy/NearestNeighbour.h"
 #include "algorithms/greedy/InsertionHeuristic.h"
-#include "OrienteeringProblemInputData.h"
+
+#include "algorithms/metaheuristic/AntColonyOptimisation.h"
 
 #define STRINGIFY(x) #x
 #define MACRO_STRINGIFY(x) STRINGIFY(x)
@@ -52,6 +54,10 @@ PYBIND11_MODULE(_core, m, py::mod_gil_not_used(), py::multiple_interpreters::per
     m.def("find_greedy_insertion", &findGreedyInsertion, 
           "A function to find a greedy insertion given a path and OP constraints.",
             py::arg("problem_data"), py::arg("path"), py::arg("visited"), py::arg("remaining_budget"));
+
+    m.def("ant_colony_optimisation_cpp", &antColonyOptimisation,
+          "A function to find a path using Ant Colony Optimisation given OP constraints.",
+            py::arg("input"), py::arg("no_of_ants"), py::arg("no_of_iterations"), py::arg("alpha"), py::arg("beta"), py::arg("evaporation_rate"), py::arg("initial_pheromone"));
 
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
