@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 from fastapi import FastAPI, HTTPException
 from models import InputData, PathResponse
-import matrix_construction
+from orienteering_prep.matrix_construction import matrix_construction
 from input_validation import validate_input
 from errors import ValidationError, InternalConversionError
 from orienteering_solver import solve_orienteering_problem

@@ -15,3 +15,5 @@ def construct_geodesic_adjacency_matrix(locations):
                 adjacency_matrix[i][j] = 0.0
                 
     return adjacency_matrix
+
+
