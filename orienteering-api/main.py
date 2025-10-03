@@ -1,10 +1,10 @@
 from typing import Any, Dict
 
 from fastapi import FastAPI, HTTPException
-from models import InputData, PathResponse
-from orienteering_prep.matrix_construction import matrix_construction
-from input_validation import validate_input
-from errors import ValidationError, InternalConversionError
+from .models import InputData, PathResponse
+from orienteering_prep.matrix_construction import construct_geodesic_adjacency_matrix
+from .input_validation import validate_input
+from .errors import ValidationError, InternalConversionError
 from orienteering_solver import solve_orienteering_problem
 
 app = FastAPI()
@@ -20,7 +20,7 @@ def solve(input_data: InputData) -> Dict[str, Any]:
         raise HTTPException(status_code=400, detail="Either adjacency_matrix or locations must be provided.")
 
     if has_locations:
-        input_data.adjacency_matrix = matrix_construction.construct_geodesic_adjacency_matrix(input_data.locations)
+        input_data.adjacency_matrix = construct_geodesic_adjacency_matrix(input_data.locations)
 
     try:
         solver_input = input_data.to_solver_input()
