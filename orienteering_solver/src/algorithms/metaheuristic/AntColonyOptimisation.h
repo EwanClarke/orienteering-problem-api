@@ -1,6 +1,3 @@
-//
-// Created by ewano on 02/10/2025.
-//
 
 #ifndef ANTCOLONYOPTIMISATION_H
 #define ANTCOLONYOPTIMISATION_H

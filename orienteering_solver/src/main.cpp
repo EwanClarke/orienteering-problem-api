@@ -7,6 +7,7 @@
 #include "algorithms/greedy/InsertionHeuristic.h"
 
 #include "algorithms/metaheuristic/AntColonyOptimisation.h"
+#include "algorithms/metaheuristic/GeneticAlgorithm.h"
 
 #define STRINGIFY(x) #x
 #define MACRO_STRINGIFY(x) STRINGIFY(x)
@@ -59,6 +60,10 @@ PYBIND11_MODULE(_core, m, py::mod_gil_not_used(), py::multiple_interpreters::per
           "A function to find a path using Ant Colony Optimisation given OP constraints.",
             py::arg("input"), py::arg("no_of_ants"), py::arg("no_of_iterations"), py::arg("alpha"), py::arg("beta"), py::arg("evaporation_rate"), py::arg("initial_pheromone"));
 
+    m.def("genetic_algorithm_cpp", &geneticAlgorithm,
+          "A function to find a path using Genetic Algorithm given OP constraints.",
+            py::arg("input"), py::arg("population_size"), py::arg("generations"), py::arg("mutation_rate"));
+      
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
 #else

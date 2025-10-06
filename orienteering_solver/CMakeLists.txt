@@ -13,6 +13,7 @@ pybind11_add_module(_core src/main.cpp
     src/algorithms/greedy/NearestNeighbour.cpp
     src/algorithms/greedy/InsertionHeuristic.cpp
     src/algorithms/metaheuristic/AntColonyOptimisation.cpp
+    src/algorithms/metaheuristic/GeneticAlgorithm.cpp
 )
 target_include_directories(_core PRIVATE src)
 
