@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <numeric>
 #include <unordered_set>
+#include <unordered_map>
 #include <cstdlib>
 
 std::vector<int> geneticAlgorithm(const OrienteeringProblemInputData& input, int populationSize, int generations, double mutationRate) {
@@ -14,40 +15,38 @@ std::vector<int> geneticAlgorithm(const OrienteeringProblemInputData& input, int
 
         while (newPopulation.size() < populationSize) {
             auto [parent1, parent2] = selectParents(population, input);
-            auto offspring = crossover(parent1, parent2);
-            mutate(offspring, mutationRate, input);
-            newPopulation.push_back(offspring.first);
-            if (newPopulation.size() < populationSize) {
-                newPopulation.push_back(offspring.second);
-            }
+            auto offspring = edgeRecombinationCrossover(input, parent1, parent2);
+            mutate(input, offspring, mutationRate);
+            offspring = insertionImprovement(input, offspring);
+            newPopulation.push_back(offspring);
         }
 
         population = std::move(newPopulation);
     }
     
-    std::vector<int> bestIndividual = selectBestIndividual(population, input);
+    std::vector<int> bestIndividual = selectBestIndividual(input, population);
 
     return bestIndividual;
 }
 
-std::vector<std::vector<int>> generateInitialPopulation(const OrienteeringProblemInputData& input, int populationSize) {
+std::vector<std::vector<int>> generateInitialPopulation(const OrienteeringProblemInputData& problemData, int populationSize) {
     std::vector<std::vector<int>> population;
     for (int i = 0; i < populationSize; ++i) {
-        population.push_back(generateIndividual(input));
+        population.push_back(generateIndividual(problemData));
     }
     return population;
 }
 
-std::vector<int> generateIndividual(const OrienteeringProblemInputData& input) {
-    std::vector<int> path = {input.startNode};
-    std::vector<bool> visited(input.profits.size(), false);
-    visited[input.startNode] = true;
-    double remainingBudget = input.budget;
+std::vector<int> generateIndividual(const OrienteeringProblemInputData& problemData) {
+    std::vector<int> path = {problemData.startNode};
+    std::vector<bool> visited(problemData.profits.size(), false);
+    visited[problemData.startNode] = true;
+    double remainingBudget = problemData.budget;
 
     while (true) {
         std::vector<int> candidates;
-        for (size_t i = 0; i < input.profits.size(); ++i) {
-            if (!visited[i] && input.adjacencyMatrix[path.back()][i] + input.adjacencyMatrix[i][input.endNode] <= remainingBudget) {
+        for (size_t i = 0; i < problemData.profits.size(); ++i) {
+            if (!visited[i] && problemData.adjacencyMatrix[path.back()][i] + problemData.adjacencyMatrix[i][problemData.endNode] <= remainingBudget) {
                 candidates.push_back(i);
             }
         }
@@ -55,16 +54,16 @@ std::vector<int> generateIndividual(const OrienteeringProblemInputData& input) {
         int nextNode = candidates[rand() % candidates.size()];
         path.push_back(nextNode);
         visited[nextNode] = true;
-        remainingBudget -= input.adjacencyMatrix[path[path.size() - 2]][nextNode];
+        remainingBudget -= problemData.adjacencyMatrix[path[path.size() - 2]][nextNode];
     }
-    path.push_back(input.endNode);
+    path.push_back(problemData.endNode);
     return path;
 }
 
-std::pair<std::vector<int>, std::vector<int>> selectParents(const std::vector<std::vector<int>>& population, const OrienteeringProblemInputData& input) {
-    std::vector<int> fitnessScores;
+std::pair<std::vector<int>, std::vector<int>> selectParents(const std::vector<std::vector<int>>& population, const OrienteeringProblemInputData& problemData) {
+    std::vector<double> fitnessScores;
     for (const auto& individual : population) {
-        fitnessScores.push_back(static_cast<int>(evaluateFitness(individual, input)));
+        fitnessScores.push_back(evaluatePath(problemData, individual));
     }
     int totalFitness = std::accumulate(fitnessScores.begin(), fitnessScores.end(), 0);
 
@@ -72,7 +71,7 @@ std::pair<std::vector<int>, std::vector<int>> selectParents(const std::vector<st
             population[rouletteWheelSelection(fitnessScores, totalFitness)]};
 }
 
-int rouletteWheelSelection(const std::vector<int>& fitnessScores, int totalFitness) {
+int rouletteWheelSelection(const std::vector<double>& fitnessScores, int totalFitness) {
     int randomValue = rand() % totalFitness;
     int cumulativeFitness = 0;
     for (size_t i = 0; i < fitnessScores.size(); ++i) {
@@ -84,46 +83,100 @@ int rouletteWheelSelection(const std::vector<int>& fitnessScores, int totalFitne
     return fitnessScores.size() - 1;
 }
 
-std::pair<std::vector<int>, std::vector<int>> crossover(const std::vector<int>& parent1, const std::vector<int>& parent2) {
-    int size = std::min(parent1.size(), parent2.size());
-    int start = rand() % size;
-    int end = start + rand() % (size - start);
-    // Create children with segments from both parents
-    std::vector<int> child1, child2;
-    child1.insert(child1.begin(), parent2.begin(), parent2.begin() + start);
-    child2.insert(child2.begin(), parent1.begin(), parent1.begin() + start);
-
-    child1.insert(child1.end(), parent1.begin() + start, parent1.begin() + end);
-    child2.insert(child2.end(), parent2.begin() + start, parent2.begin() + end);
-
-    child1.insert(child1.end(), parent2.begin() + end, parent2.end());
-    child2.insert(child2.end(), parent1.begin() + end, parent1.end());
-    // Remove duplicates while preserving order
-    std::unordered_set<int> child1Set, child2Set;
-    child1Set.insert(*child1.end());
-    child2Set.insert(*child2.end());
-    std::vector<int>::iterator it;
-    for (it = child1.begin(); it != child1.end()-1; ++it) {
-        if (child1Set.contains(*it)) {
-            child1.erase(it);
-        } else {
-            child1Set.insert(*it);
-        }
+std::vector<int> edgeRecombinationCrossover(OrienteeringProblemInputData& problemData, const std::vector<int>& parent1, const std::vector<int>& parent2) {
+    std::unordered_map<int, std::unordered_set<int>> adjacencyList1, adjacencyList2;
+    int n = parent1.size();
+    for (int i = 0; i < n-2; ++i) { // Exclude last node (endNode)
+        adjacencyList1[parent1[i]].insert(parent1[(i+1)]);
+        adjacencyList1[parent1[i+1]].insert(parent1[i]);
+        adjacencyList2[parent2[i]].insert(parent2[(i+1)]);
+        adjacencyList2[parent2[i+1]].insert(parent2[i]);
     }
-    for (it = child2.begin(); it != child2.end()-1; ++it) {
-        if (child2Set.contains(*it)) {
-            child2.erase(it);
-        } else {
-            child2Set.insert(*it);
+
+    std::vector<int> child;
+    std::unordered_set<int> visited;
+    int current = problemData.startNode;
+    child.push_back(current);
+    visited.insert(current);
+    double remainingBudget = problemData.budget;
+
+    while (child.size() < n) {
+        for (auto& [key, neighbors] : adjacencyList1) {
+            neighbors.erase(current);
         }
+        for (auto& [key, neighbors] : adjacencyList2) {
+            neighbors.erase(current);
+        }
+
+        const auto& neighbors1 = adjacencyList1[current];
+        const auto& neighbors2 = adjacencyList2[current];
+        std::unordered_set<int> combinedNeighbors; // Union of neighbors
+        combinedNeighbors.insert(neighbors1.begin(), neighbors1.end());
+        combinedNeighbors.insert(neighbors2.begin(), neighbors2.end());
+        if (combinedNeighbors.empty()) break; // No possible recombination
+
+        int next = -1;
+        int minSize = INT_MAX;
+        for (int neighbor : combinedNeighbors) {
+            int size = adjacencyList1[neighbor].size() + adjacencyList2[neighbor].size();
+            if (size < minSize && !visited.contains(neighbor)) {
+                minSize = size;
+                next = neighbor;
+            }
+        }
+        if (next == -1) break; // No unvisited neighbors
+
+        if (problemData.adjacencyMatrix[current][next] + problemData.adjacencyMatrix[next][problemData.endNode] > remainingBudget) {
+            break; // Cannot add next node due to budget constraint
+        }
+        child.push_back(next);
+        visited.insert(next);
+        remainingBudget -= problemData.adjacencyMatrix[current][next];
+        current = next;
     }
-    
+    child.push_back(problemData.endNode);
+    remainingBudget -= problemData.adjacencyMatrix[current][problemData.endNode];
 
-
-    return {child1, child2};
+    return child;
 }
 
-std::pair<std::vector<int>, std::vector<int>> edgeRecombinationCrossover(const std::vector<int>& parent1, const std::vector<int>& parent2) {
-    // Placeholder for edge recombination crossover implementation
-    return crossover(parent1, parent2); // Fallback to simple crossover for now
+std::vector<int> insertionImprovement(const OrienteeringProblemInputData& problemData, const std::vector<int>& individual) {
+    double remainingBudget = problemData.budget;
+    for (size_t i = 0; i < individual.size() - 1; ++i) {
+        remainingBudget -= problemData.adjacencyMatrix[individual[i]][individual[i + 1]];
+    }
+    std::vector<int> improvedPath = individual;
+    std::vector<bool> visited(problemData.profits.size(), false);
+    for (int node : individual) {
+        visited[node] = true;
+    }
+
+    while (true) {
+        auto [insertionLocation, insertionNode, insertionDelta] = findGreedyInsertion(problemData, improvedPath, visited, remainingBudget);
+        if (insertionNode == -1) {
+            break;
+        }
+
+        improvedPath.insert(improvedPath.begin() + insertionLocation, insertionNode);
+        visited[insertionNode] = true;
+        remainingBudget -= insertionDelta;
+    }
+
+    return improvedPath;
+}
+
+void mutate(const OrienteeringProblemInputData& problemData, std::vector<int>& individual, double mutationRate) {
+    if ((rand() / double(RAND_MAX)) < mutationRate) {
+        if (individual.size() >= 4) {
+            //TODO: add removal mutation
+            // Remove a random node (not start or end)
+            individual = twoOptBestImprovement(problemData, individual);
+        }
+    }
+}
+
+std::vector<int> selectBestIndividual(const OrienteeringProblemInputData& problemData, const std::vector<std::vector<int>>& population) {
+    return *std::max_element(population.begin(), population.end(), [&](const std::vector<int>& a, const std::vector<int>& b) {
+        return evaluatePath(problemData, a) < evaluatePath(problemData, b);
+    });
 }

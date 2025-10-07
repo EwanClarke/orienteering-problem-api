@@ -10,10 +10,12 @@ project(
 find_package(pybind11 CONFIG REQUIRED)
 
 pybind11_add_module(_core src/main.cpp
+    src/algorithms/utils.cpp
     src/algorithms/greedy/NearestNeighbour.cpp
     src/algorithms/greedy/InsertionHeuristic.cpp
     src/algorithms/metaheuristic/AntColonyOptimisation.cpp
     src/algorithms/metaheuristic/GeneticAlgorithm.cpp
+    src/algorithms/pathImprovement/TwoOpt.cpp
 )
 target_include_directories(_core PRIVATE src)
 

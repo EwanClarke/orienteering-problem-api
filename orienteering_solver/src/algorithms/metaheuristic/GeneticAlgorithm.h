@@ -4,26 +4,27 @@
 
 #include <vector>
 #include "OrienteeringProblemInputData.h"
+#include "InsertionHeuristic.h"
+#include "TwoOpt.h"
+#include "utils.h"
 
 std::vector<int> geneticAlgorithm(const OrienteeringProblemInputData& input, int populationSize, int generations, double mutationRate);
 
-double evaluateFitness(const std::vector<int>& individual, const OrienteeringProblemInputData& input);
+double evaluateFitness(const OrienteeringProblemInputData& problemData, const std::vector<int>& path);
 
-std::vector<std::vector<int>> generateInitialPopulation(const OrienteeringProblemInputData& input, int populationSize);
-std::vector<int> generateIndividual(const OrienteeringProblemInputData& input);
+std::vector<std::vector<int>> generateInitialPopulation(const OrienteeringProblemInputData& problemData, int populationSize);
+std::vector<int> generateIndividual(const OrienteeringProblemInputData& problemData);
 
-std::pair<std::vector<int>, std::vector<int>> selectParents(const std::vector<std::vector<int>>& population, const OrienteeringProblemInputData& input);
-int rouletteWheelSelection(const std::vector<int>& fitnessScores, int totalFitness);
+std::pair<std::vector<int>, std::vector<int>> selectParents(const std::vector<std::vector<int>>& population, const OrienteeringProblemInputData& problemData);
+int rouletteWheelSelection(const std::vector<double>& fitnessScores, int totalFitness);
 
-std::pair<std::vector<int>, std::vector<int>> crossover(const std::vector<int>& parent1, const std::vector<int>& parent2);
-std::pair<std::vector<int>, std::vector<int>> orderCrossover(const std::vector<int>& parent1, const std::vector<int>& parent2);
-std::pair<std::vector<int>, std::vector<int>> pmxCrossover(const std::vector<int>& parent1, const std::vector<int>& parent2);
-std::pair<std::vector<int>, std::vector<int>> cycleCrossover(const std::vector<int>& parent1, const std::vector<int>& parent2);
-std::pair<std::vector<int>, std::vector<int>> edgeRecombinationCrossover(const std::vector<int>& parent1, const std::vector<int>& parent2);
+std::vector<int> edgeRecombinationCrossover(const OrienteeringProblemInputData problemData, const std::vector<int>& parent1, const std::vector<int>& parent2);
 
-void mutate(std::pair<std::vector<int>, std::vector<int>>& individual, double mutationRate, const OrienteeringProblemInputData& input);
+std::vector<int> insertionImprovement(const OrienteeringProblemInputData& problemData, const std::vector<int>& individual);
 
-std::vector<int> selectBestIndividual(const std::vector<std::vector<int>>& population, const OrienteeringProblemInputData& input);
+void mutate(const OrienteeringProblemInputData& problemData, std::vector<int>& individual, double mutationRate);
+
+std::vector<int> selectBestIndividual(const OrienteeringProblemInputData& problemData, const std::vector<std::vector<int>>& population);
 
 
 #endif //GENETICALGORITHM_H
