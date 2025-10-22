@@ -39,7 +39,7 @@ uvicorn orienteering-api.main:app --reload --port 8080
 A simple request from the terminal will look like the following (PowerShell example):
 
 ```powershell
-curl -X POST -H "Content-Type: application/json" -d '{"locations": [{"lat": 51.5074, "lon": 0.1278}, {"lat": 48.8566, "lon": 2.3522}, {"lat": 52.5200, "lon": 13.4050}], "profits": [0.0, 50.0, 40.0], "budget": 5000.0, "start_node": 0, "end_node": 2, "algorithm": "nearest_neighbour"}' "http://127.0.0.1:8080/solve"
+curl -X POST -H "Content-Type: application/json" -d "{\"locations\": [{\"lat\": 51.5074, \"lon\": 0.1278}, {\"lat\": 48.8566, \"lon\": 2.3522}, {\"lat\": 52.5200, \"lon\": 13.4050}, {\"lat\": 40.7128, \"lon\": -74.0060}, {\"lat\": 55.9533, \"lon\": -3.1883}], \"profits\": [0.0, 50.0, 40.0, 60.0, 0.0], \"budget\": 5000.0, \"start_node\": 0, \"end_node\": 4, \"algorithm\": \"nearest_neighbour\"}" "http://127.0.0.1:8080/solve"
 ```
 Adjacency matrix input will involve swapping out locations for matrix followed by nested arrays for the adjacency matrix.
 ## Adding algorithms
