@@ -48,8 +48,8 @@ def ant_colony_optimisation(problem_data):
 
 def genetic_algorithm(problem_data):
     # Parameters for the Genetic Algorithm can be adjusted as needed
-    population_size = 2
-    generations = 2
+    population_size = 20
+    generations = 20
     mutation_rate = 0.01  # Probability of mutation
 
     return genetic_algorithm_cpp(problem_data, population_size, generations, mutation_rate)

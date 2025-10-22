@@ -16,7 +16,8 @@ double evaluatePath(const OrienteeringProblemInputData& problemData, const std::
     }
 
     if (totalCost > problemData.budget) {
-        return -std::numeric_limits<double>::infinity(); // Invalid path
+        // Return a large negative finite value to indicate invalid/over-budget path
+        return -1e9;
     }
     return totalProfit;
 }

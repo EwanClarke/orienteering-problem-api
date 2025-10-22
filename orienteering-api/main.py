@@ -1,10 +1,10 @@
 from typing import Any, Dict
 
 from fastapi import FastAPI, HTTPException
-from .models import InputData, PathResponse
+from models import InputData, PathResponse
 from orienteering_prep.matrix_construction import construct_geodesic_adjacency_matrix
-from .input_validation import validate_input
-from .errors import ValidationError, InternalConversionError
+from input_validation import validate_input
+from errors import ValidationError, InternalConversionError
 from orienteering_solver import solve_orienteering_problem
 
 app = FastAPI()

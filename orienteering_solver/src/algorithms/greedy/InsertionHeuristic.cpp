@@ -35,10 +35,18 @@ Insertion findCheapestInsertion(const OrienteeringProblemInputData &problemData,
         }
 
         for (int insertionLocation = 1; insertionLocation < path.size(); ++insertionLocation) {
+            // defensive bounds checks
+            int a = path[insertionLocation - 1];
+            int b = path[insertionLocation];
+            if (a < 0 || a >= (int)problemData.adjacencyMatrix.size() ||
+                b < 0 || b >= (int)problemData.adjacencyMatrix.size() ||
+                node < 0 || node >= (int)problemData.adjacencyMatrix.size()) {
+                continue;
+            }
             double insertionDelta = 
-                problemData.adjacencyMatrix[path[insertionLocation - 1]][node] +
-                problemData.adjacencyMatrix[node][path[insertionLocation]] -
-                problemData.adjacencyMatrix[path[insertionLocation - 1]][path[insertionLocation]];
+                problemData.adjacencyMatrix[a][node] +
+                problemData.adjacencyMatrix[node][b] -
+                problemData.adjacencyMatrix[a][b];
 
             if (insertionDelta <= remainingBudget && insertionDelta < cheapestInsertion.insertionDelta) {
                 cheapestInsertion = Insertion(insertionLocation, node, insertionDelta);

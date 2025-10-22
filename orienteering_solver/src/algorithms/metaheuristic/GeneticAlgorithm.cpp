@@ -5,12 +5,16 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <cstdlib>
+#include <iostream>
 
 std::vector<int> geneticAlgorithm(const OrienteeringProblemInputData& input, int populationSize, int generations, double mutationRate) {
     
     std::vector<std::vector<int>> population = generateInitialPopulation(input, populationSize);
 
     while (generations-- > 0) {
+        std::cout << "Generation " << (generations) << " best fitness: " 
+                  << evaluatePath(input, selectBestIndividual(input, population)) << std::endl;
+
         std::vector<std::vector<int>> newPopulation;
 
         while (newPopulation.size() < populationSize) {
@@ -23,9 +27,8 @@ std::vector<int> geneticAlgorithm(const OrienteeringProblemInputData& input, int
 
         population = std::move(newPopulation);
     }
-    
     std::vector<int> bestIndividual = selectBestIndividual(input, population);
-
+    std::cout << "Final best fitness: " << evaluatePath(input, bestIndividual) << std::endl;
     return bestIndividual;
 }
 
@@ -41,6 +44,7 @@ std::vector<int> generateIndividual(const OrienteeringProblemInputData& problemD
     std::vector<int> path = {problemData.startNode};
     std::vector<bool> visited(problemData.profits.size(), false);
     visited[problemData.startNode] = true;
+    visited[problemData.endNode] = true;
     double remainingBudget = problemData.budget;
 
     while (true) {
@@ -57,6 +61,7 @@ std::vector<int> generateIndividual(const OrienteeringProblemInputData& problemD
         remainingBudget -= problemData.adjacencyMatrix[path[path.size() - 2]][nextNode];
     }
     path.push_back(problemData.endNode);
+
     return path;
 }
 
@@ -65,31 +70,36 @@ std::pair<std::vector<int>, std::vector<int>> selectParents(const std::vector<st
     for (const auto& individual : population) {
         fitnessScores.push_back(evaluatePath(problemData, individual));
     }
-    int totalFitness = std::accumulate(fitnessScores.begin(), fitnessScores.end(), 0);
+    double totalFitness = std::accumulate(fitnessScores.begin(), fitnessScores.end(), 0.0);
 
     return {population[rouletteWheelSelection(fitnessScores, totalFitness)],
             population[rouletteWheelSelection(fitnessScores, totalFitness)]};
 }
 
-int rouletteWheelSelection(const std::vector<double>& fitnessScores, int totalFitness) {
-    int randomValue = rand() % totalFitness;
-    int cumulativeFitness = 0;
-    for (size_t i = 0; i < fitnessScores.size(); ++i) {
-        cumulativeFitness += fitnessScores[i];
-        if (randomValue < cumulativeFitness) {
-            return i;
-        }
+int rouletteWheelSelection(const std::vector<double>& fitnessScores, double totalFitness) {
+    if (fitnessScores.empty()) return 0;
+    if (totalFitness <= 0.0) {
+        // fallback to random index if no positive fitness
+        return rand() % fitnessScores.size();
     }
-    return fitnessScores.size() - 1;
+    double r = (double)rand() / (double)RAND_MAX * totalFitness;
+    double cumulative = 0.0;
+    for (size_t i = 0; i < fitnessScores.size(); ++i) {
+        cumulative += fitnessScores[i];
+        if (r < cumulative) return (int)i;
+    }
+    return (int)fitnessScores.size() - 1;
 }
 
 std::vector<int> edgeRecombinationCrossover(const OrienteeringProblemInputData& problemData, const std::vector<int>& parent1, const std::vector<int>& parent2) {
     std::unordered_map<int, std::unordered_set<int>> adjacencyList1, adjacencyList2;
-    int n = parent1.size();
-    for (int i = 0; i < n-2; ++i) { // Exclude last node (endNode)
-        adjacencyList1[parent1[i]].insert(parent1[(i+1)]);
+    // Build adjacency lists from the full parent sequences (include last adjacent pair)
+    for (int i = 0; i + 1 < (int)parent1.size(); ++i) {
+        adjacencyList1[parent1[i]].insert(parent1[i+1]);
         adjacencyList1[parent1[i+1]].insert(parent1[i]);
-        adjacencyList2[parent2[i]].insert(parent2[(i+1)]);
+    }
+    for (int i = 0; i + 1 < (int)parent2.size(); ++i) {
+        adjacencyList2[parent2[i]].insert(parent2[i+1]);
         adjacencyList2[parent2[i+1]].insert(parent2[i]);
     }
 
@@ -100,7 +110,8 @@ std::vector<int> edgeRecombinationCrossover(const OrienteeringProblemInputData& 
     visited.insert(current);
     double remainingBudget = problemData.budget;
 
-    while (child.size() < n) {
+    // Grow child until no feasible unvisited neighbors remain or budget exhausted
+    while (true) {
         for (auto& [key, neighbors] : adjacencyList1) {
             neighbors.erase(current);
         }
@@ -117,9 +128,16 @@ std::vector<int> edgeRecombinationCrossover(const OrienteeringProblemInputData& 
 
         int next = -1;
         int minSize = INT_MAX;
+        // Choose among unvisited neighbors and never choose the end node as an intermediate
         for (int neighbor : combinedNeighbors) {
-            int size = adjacencyList1[neighbor].size() + adjacencyList2[neighbor].size();
-            if (size < minSize && !visited.contains(neighbor)) {
+            if (visited.contains(neighbor) || neighbor == problemData.endNode) continue;
+            size_t size1 = 0, size2 = 0;
+            auto it1 = adjacencyList1.find(neighbor);
+            if (it1 != adjacencyList1.end()) size1 = it1->second.size();
+            auto it2 = adjacencyList2.find(neighbor);
+            if (it2 != adjacencyList2.end()) size2 = it2->second.size();
+            int size = (int)(size1 + size2);
+            if (size < minSize) {
                 minSize = size;
                 next = neighbor;
             }

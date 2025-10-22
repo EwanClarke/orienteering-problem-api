@@ -2,7 +2,7 @@ import math
 from typing import List
 
 from orienteering_solver import OrienteeringProblemInputData
-from .errors import (
+from errors import (
     ValidationError,
     MissingFieldError,
     InvalidTypeError,

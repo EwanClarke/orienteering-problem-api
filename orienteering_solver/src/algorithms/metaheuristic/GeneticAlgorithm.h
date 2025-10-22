@@ -14,7 +14,7 @@ std::vector<std::vector<int>> generateInitialPopulation(const OrienteeringProble
 std::vector<int> generateIndividual(const OrienteeringProblemInputData& problemData);
 
 std::pair<std::vector<int>, std::vector<int>> selectParents(const std::vector<std::vector<int>>& population, const OrienteeringProblemInputData& problemData);
-int rouletteWheelSelection(const std::vector<double>& fitnessScores, int totalFitness);
+int rouletteWheelSelection(const std::vector<double>& fitnessScores, double totalFitness);
 
 std::vector<int> edgeRecombinationCrossover(const OrienteeringProblemInputData& problemData, const std::vector<int>& parent1, const std::vector<int>& parent2);
 
