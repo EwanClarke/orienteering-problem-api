@@ -1,0 +1,6 @@
+# Development requirements: install local packages in editable mode
+# Edit these paths if your local layout differs.
+
+-e ./orienteering_solver
+-e ./orienteering_prep
+

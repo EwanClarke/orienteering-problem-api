@@ -2,9 +2,11 @@
 #ifndef ANTCOLONYOPTIMISATION_H
 #define ANTCOLONYOPTIMISATION_H
 
+#include "OrienteeringProblemInputData.h"
+#include "utils.h"
+
 #include <vector>
 #include <set>
-#include "OrienteeringProblemInputData.h"
 #include <functional>
 #include <limits>
 #include <unordered_map>

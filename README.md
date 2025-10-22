@@ -6,19 +6,40 @@ This repository contains a Python FastAPI application that exposes an orienteeri
 
 ## Installation
 
-- clone the repository
-- install packages
-  - pip install .
+Prerequisites
 
-## Local running of api & inputs
-To run the api, run the following in a terminal from the root directory:
+- Python 3.8+ (this workspace was tested with Python 3.13 on Windows).
+- A C/C++ toolchain for building the native solver:
+    - On Windows: Visual Studio (MSVC) with "Desktop development with C++" and CMake.
+    - CMake and a working build environment must be available on PATH.
+- pip, wheel
+
+Developer / local editable install (recommended)
+
+1. From the repository root, install the local packages in editable mode. This will build the native solver and install the small helper package used by the API:
+
+```powershell
+python -m pip install -r .\dev-requirements.txt
 ```
-uvicorn orienteering-api.main:app --port 8080
+
+This installs the C++ extension (`orienteering_solver`) and the Python helper package (`orienteering_prep`) in editable mode so changes in the source tree are immediately visible.
+
+If you see errors when building the solver, ensure your C++ toolchain and CMake are installed and that you opened the terminal from a developer command prompt (or have MSVC and CMake on PATH).
+
+## Local running of the API
+
+To run the API from the repository root using the included app in the `orienteering-api` directory, point uvicorn at the module and use `--app-dir` because the directory name contains a hyphen (not a valid Python package identifier):
+
+```powershell
+uvicorn orienteering-api.main:app --reload --port 8080
 ```
+
 ### Requests
-A simple request from the terminal will look like the following:
-```
-curl -X POST -H "Content-Type: application/json" -d "{\"locations\": [{\"lat\": 51.5074, \"lon\": 0.1278}, {\"lat\": 48.8566, \"lon\": 2.3522}, {\"lat\": 52.5200, \"lon\": 13.4050}, {\"lat\": 40.7128, \"lon\": -74.0060}, {\"lat\": 55.9533, \"lon\": -3.1883}], \"profits\": [0.0, 50.0, 40.0, 60.0, 0.0], \"budget\": 5000.0, \"start_node\": 0, \"end_node\": 4, \"algorithm\": \"nearest_neighbour\"}" "http://127.0.0.1:8080/solve"
+
+A simple request from the terminal will look like the following (PowerShell example):
+
+```powershell
+curl -X POST -H "Content-Type: application/json" -d '{"locations": [{"lat": 51.5074, "lon": 0.1278}, {"lat": 48.8566, "lon": 2.3522}, {"lat": 52.5200, "lon": 13.4050}], "profits": [0.0, 50.0, 40.0], "budget": 5000.0, "start_node": 0, "end_node": 2, "algorithm": "nearest_neighbour"}' "http://127.0.0.1:8080/solve"
 ```
 Adjacency matrix input will involve swapping out locations for matrix followed by nested arrays for the adjacency matrix.
 ## Adding algorithms

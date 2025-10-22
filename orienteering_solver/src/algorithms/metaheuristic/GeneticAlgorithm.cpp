@@ -83,7 +83,7 @@ int rouletteWheelSelection(const std::vector<double>& fitnessScores, int totalFi
     return fitnessScores.size() - 1;
 }
 
-std::vector<int> edgeRecombinationCrossover(OrienteeringProblemInputData& problemData, const std::vector<int>& parent1, const std::vector<int>& parent2) {
+std::vector<int> edgeRecombinationCrossover(const OrienteeringProblemInputData& problemData, const std::vector<int>& parent1, const std::vector<int>& parent2) {
     std::unordered_map<int, std::unordered_set<int>> adjacencyList1, adjacencyList2;
     int n = parent1.size();
     for (int i = 0; i < n-2; ++i) { // Exclude last node (endNode)
@@ -166,13 +166,21 @@ std::vector<int> insertionImprovement(const OrienteeringProblemInputData& proble
 }
 
 void mutate(const OrienteeringProblemInputData& problemData, std::vector<int>& individual, double mutationRate) {
-    if ((rand() / double(RAND_MAX)) < mutationRate) {
+    if ((rand() / double(RAND_MAX)) > mutationRate) {
+        return;
+    }
+
+    if ((rand() / double(RAND_MAX)) > 0.5) {
+        if (individual.size() > 3) {
+            int removeIndex = rand() % (individual.size() - 2) + 1;
+            individual.erase(individual.begin() + removeIndex);
+        }
+    } else {
         if (individual.size() >= 4) {
-            //TODO: add removal mutation
-            // Remove a random node (not start or end)
-            individual = twoOptBestImprovement(problemData, individual);
+        individual = twoOptBestImprovement(problemData, individual);
         }
     }
+    
 }
 
 std::vector<int> selectBestIndividual(const OrienteeringProblemInputData& problemData, const std::vector<std::vector<int>>& population) {

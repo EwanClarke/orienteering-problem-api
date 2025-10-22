@@ -10,15 +10,13 @@
 
 std::vector<int> geneticAlgorithm(const OrienteeringProblemInputData& input, int populationSize, int generations, double mutationRate);
 
-double evaluateFitness(const OrienteeringProblemInputData& problemData, const std::vector<int>& path);
-
 std::vector<std::vector<int>> generateInitialPopulation(const OrienteeringProblemInputData& problemData, int populationSize);
 std::vector<int> generateIndividual(const OrienteeringProblemInputData& problemData);
 
 std::pair<std::vector<int>, std::vector<int>> selectParents(const std::vector<std::vector<int>>& population, const OrienteeringProblemInputData& problemData);
 int rouletteWheelSelection(const std::vector<double>& fitnessScores, int totalFitness);
 
-std::vector<int> edgeRecombinationCrossover(const OrienteeringProblemInputData problemData, const std::vector<int>& parent1, const std::vector<int>& parent2);
+std::vector<int> edgeRecombinationCrossover(const OrienteeringProblemInputData& problemData, const std::vector<int>& parent1, const std::vector<int>& parent2);
 
 std::vector<int> insertionImprovement(const OrienteeringProblemInputData& problemData, const std::vector<int>& individual);
 

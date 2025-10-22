@@ -17,7 +17,12 @@ pybind11_add_module(_core src/main.cpp
     src/algorithms/metaheuristic/GeneticAlgorithm.cpp
     src/algorithms/pathImprovement/TwoOpt.cpp
 )
-target_include_directories(_core PRIVATE src)
+target_include_directories(_core PRIVATE src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/algorithms/greedy
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/algorithms/metaheuristic
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/algorithms/pathImprovement
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/algorithms/
+)
 
 target_compile_definitions(_core PRIVATE VERSION_INFO=${PROJECT_VERSION})
 
