@@ -1,6 +1,41 @@
-# Development requirements: install local packages in editable mode
-# Edit these paths if your local layout differs.
 
+# Notes for Windows PowerShell:
+# - Run from the repository root:
+#     python -m pip install -r .\dev-requirements.txt
+# - Ensure build prerequisites (Visual Studio Build Tools, CMake) are
+#   installed before pip attempts to build native extensions.
+
+# --- editable local packages (local dev copy, built in editable mode)
 -e ./orienteering_solver
 -e ./orienteering_prep
+
+# --- core runtime dependencies
+fastapi==0.100.0
+uvicorn[standard]==0.22.0
+numpy>=1.28
+requests>=2.32
+python-dotenv>=1.0.0
+
+# --- build / native-extension helpers (help pip build C++ extensions)
+# scikit-build-core is used by projects that use CMake / pybind11 as a
+# PEP 517 backend. pybind11 provides headers for building bindings.
+scikit-build-core>=0.7.0
+pybind11>=2.10
+# If you don't have a system CMake, the pip 'cmake' package can install one
+# (optional; system CMake is preferred on Windows when using VS/MSVC):
+cmake>=3.26
+
+# --- optional / examples (uncomment if you need them)
+# install directly from a public GitHub branch
+# git+https://github.com/psf/requests.git@main#egg=requests
+# private repo (SSH); requires SSH key & agent
+# git+ssh://git@github.com/your-org/private-package.git@main#egg=private_pkg
+# local wheel file (absolute path on Windows; forward slashes)
+# file:///C:/some/path/external_package-0.1.0-py3-none-any.whl
+
+# --- helper tooling (dev-only)
+wheel
+setuptools
+
+
 

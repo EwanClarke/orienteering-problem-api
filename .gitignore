@@ -6,6 +6,7 @@ venv/
 .venv/
 env/
 .env/
+.env
 
 # Byte-compiled files
 *.py[co]
@@ -60,3 +61,4 @@ install_manifest.txt
 # Operating System files
 .DS_Store
 Thumbs.db
+
