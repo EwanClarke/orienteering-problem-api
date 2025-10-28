@@ -26,6 +26,7 @@ def construct_osr_adjacency_matrix(locations):
             "metrics": ["duration"]}
 
     load_dotenv()
+    print("calling OSR matrix")
     headers = {
         'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
         'Authorization': os.getenv('ORS_API_KEY'),

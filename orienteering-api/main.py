@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 from fastapi import FastAPI, HTTPException
 from models import InputData, PathResponse
-from orienteering_prep.matrix_construction import construct_geodesic_adjacency_matrix
+from orienteering_prep.matrix_construction import construct_geodesic_adjacency_matrix, construct_osr_adjacency_matrix
 from input_validation import validate_input
 from errors import ValidationError, InternalConversionError
 from orienteering_solver import solve_orienteering_problem
@@ -21,7 +21,7 @@ def solve(input_data: InputData) -> Dict[str, Any]:
 
     if has_locations:
         input_data.adjacency_matrix = construct_geodesic_adjacency_matrix(input_data.locations)
-
+    print(input_data.adjacency_matrix)
     try:
         solver_input = input_data.to_solver_input()
     except ValueError as e:
