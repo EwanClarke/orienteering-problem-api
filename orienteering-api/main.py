@@ -21,7 +21,7 @@ def solve(input_data: InputData) -> Dict[str, Any]:
 
     if has_locations:
         input_data.adjacency_matrix = construct_geodesic_adjacency_matrix(input_data.locations)
-    print(input_data.adjacency_matrix)
+
     try:
         solver_input = input_data.to_solver_input()
     except ValueError as e:

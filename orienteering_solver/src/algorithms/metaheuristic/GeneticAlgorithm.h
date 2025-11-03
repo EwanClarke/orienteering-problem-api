@@ -6,7 +6,7 @@
 #include "OrienteeringProblemInputData.h"
 #include "InsertionHeuristic.h"
 #include "TwoOpt.h"
-#include "utils.h"
+#include "./utils.h"
 
 std::vector<int> geneticAlgorithm(const OrienteeringProblemInputData& input, int populationSize, int generations, double mutationRate);
 
@@ -24,5 +24,6 @@ void mutate(const OrienteeringProblemInputData& problemData, std::vector<int>& i
 
 std::vector<int> selectBestIndividual(const OrienteeringProblemInputData& problemData, const std::vector<std::vector<int>>& population);
 
+double evaluatePath(const OrienteeringProblemInputData& problemData, const std::vector<int>& path);
 
 #endif //GENETICALGORITHM_H

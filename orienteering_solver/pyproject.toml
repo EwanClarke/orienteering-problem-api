@@ -3,7 +3,7 @@ requires = ["scikit-build-core>=0.11", "pybind11>=3.0"]
 build-backend = "scikit_build_core.build"
 
 [project]
-name = "orienteering-solver"
+name = "orienteering_solver"
 version = "0.0.1"
 description = "Algorithms for the orienteering problem (C++ pybind extension)."
 readme = "README.md"

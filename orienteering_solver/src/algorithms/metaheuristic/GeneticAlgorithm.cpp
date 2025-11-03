@@ -12,8 +12,6 @@ std::vector<int> geneticAlgorithm(const OrienteeringProblemInputData& input, int
     std::vector<std::vector<int>> population = generateInitialPopulation(input, populationSize);
 
     while (generations-- > 0) {
-        std::cout << "Generation " << (generations) << " best fitness: " 
-                  << evaluatePath(input, selectBestIndividual(input, population)) << std::endl;
 
         std::vector<std::vector<int>> newPopulation;
 
@@ -28,7 +26,6 @@ std::vector<int> geneticAlgorithm(const OrienteeringProblemInputData& input, int
         population = std::move(newPopulation);
     }
     std::vector<int> bestIndividual = selectBestIndividual(input, population);
-    std::cout << "Final best fitness: " << evaluatePath(input, bestIndividual) << std::endl;
     return bestIndividual;
 }
 
