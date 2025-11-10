@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains a Python FastAPI application that exposes an orienteering solver endpoint (/solve). The heavy lifting solver is implemented in C++ and exposed to Python through pybind11 (package: `orienteering_solver`). The Python side converts JSON -> Pydantic models -> a small pybind11 DTO and calls the native solver. The api accepts both complete adjacency matrices and lists of locations (pairs of latitude and longitude values) which are used to construct a complete geodesic adjacency matrix, with plans to allow matrix construction based on transportation networks.
+This repository contains a Python FastAPI application that exposes an orienteering solver endpoint (/solve). The heavy lifting solver is implemented in C++ and exposed to Python through pybind11 (package: `orienteering_solver`). The api accepts both complete adjacency matrices and lists of locations (pairs of latitude and longitude values) which are used to construct a complete geodesic adjacency matrix, with plans to allow matrix construction based on transportation networks.
 
 ## Installation
 
@@ -28,7 +28,7 @@ If you see errors when building the solver, ensure your C++ toolchain and CMake 
 
 ## Local running of the API
 
-To run the API from the repository root using the included app in the `orienteering-api` directory, point uvicorn at the module and use `--app-dir` because the directory name contains a hyphen (not a valid Python package identifier):
+To run the API from the repository root using the included app in the `orienteering-api` directory:
 
 ```powershell
 uvicorn orienteering-api.main:app --reload --port 8080
