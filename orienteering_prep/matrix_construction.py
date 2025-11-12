@@ -23,7 +23,7 @@ def construct_geodesic_adjacency_matrix(locations):
 
 def construct_osr_adjacency_matrix(locations):
     body = {"locations": [[loc.lon, loc.lat] for loc in locations],
-            "metrics": ["duration"]}
+            "metrics": ["distance"]}
 
     load_dotenv()
     print("calling OSR matrix")
@@ -38,4 +38,5 @@ def construct_osr_adjacency_matrix(locations):
         raise Exception(f"Error fetching OSR matrix: {call.status_code} {call.reason} {call.text}")
 
     data = call.json()
-    return data['durations']
+    print(data["distances"])
+    return data['distances']

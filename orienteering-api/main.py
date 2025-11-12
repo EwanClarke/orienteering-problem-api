@@ -20,7 +20,9 @@ def solve(input_data: InputData) -> Dict[str, Any]:
         raise HTTPException(status_code=400, detail="Either adjacency_matrix or locations must be provided.")
 
     if has_locations:
-        input_data.adjacency_matrix = construct_geodesic_adjacency_matrix(input_data.locations)
+        #input_data.adjacency_matrix = construct_geodesic_adjacency_matrix(input_data.locations)
+        # Alternatively, to use OSR matrix construction, uncomment the following line:
+        input_data.adjacency_matrix = construct_osr_adjacency_matrix(input_data.locations)
 
     try:
         solver_input = input_data.to_solver_input()
